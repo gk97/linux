@@ -20,5 +20,3 @@ Build the kernel itself by running "make". (optional: number of CPUs can be spec
 Further, all the required modules build from the previous commands need to be packaged with the kernel to make it suitable for boot. This is done using the command "sudo make INSTALL_MOD_STRIP=1 modules_install".
 Install the kernel "sudo make install" and reboot the system.
 Run the command "dmesg" to get the system log containing the print statements from the provided .c file. This message shall indicate the presense of absense of different virtualization features available in the system.
-
-
