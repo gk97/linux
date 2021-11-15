@@ -1,18 +1,24 @@
-Linux kernel
-============
+CMPE 283 Assignment 1: Discovering VMX Features
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+Team Members: Guru Karthik (only one person)
+Student ID: 015238509
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+2) The assignment is about creating a Linux kernel module that will query different MSRs to determine virtualization features available in the CPU. 
+Steps followed to achieve the given goal:
 
-    https://www.kernel.org/doc/html/latest/
+System requirements: Linux machine, either VM based or on real hardware running on Intel CPU.
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+Initially the system is checked if it supoprts hardware assisted virtualization by running the command "cat /proc/cpuinfo". If "vmx_flags" attribute is shown in the result then it means that the
+system is capale of hardware assisted virtualization.
+The the Linux kernel source code is forked from git (https://github.com/torvalds/linux). Clone the forked repo from git.
+Download the provided MakeFile and also the template .c file. Make appropriate changes to this .c file to read the VMX configuration MSRs to ascertain support capabilities for Entry, Exit, Procbased, Secondary Procbased and
+Pinbased controls.
+Copy the appropriate config file from boot folder to the cloned repo.
+Run the command "make oldconfig" in order to compare the old config file from ubuntu with the new config file from cloned Linux kernel repo. This shall also install the required modules upon comparision and run "make prepare" command.
+Then build all modules that go into the kernel by running "make modules". (optional: number of CPUs can be specified here for faster build)
+Build the kernel itself by running "make". (optional: number of CPUs can be specified here for faster build)
+Further, all the required modules build from the previous commands need to be packaged with the kernel to make it suitable for boot. This is done using the command "sudo make INSTALL_MOD_STRIP=1 modules_install".
+Install the kernel "sudo make install" and reboot the system.
+Run the command "dmesg" to get the system log containing the print statements from the provided .c file. This message shall indicate the presense of absense of different virtualization features available in the system.
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+
