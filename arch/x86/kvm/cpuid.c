@@ -32,6 +32,11 @@
 u32 kvm_cpu_caps[NR_KVM_CPU_CAPS] __read_mostly;
 EXPORT_SYMBOL_GPL(kvm_cpu_caps);
 
+atomic_t total_exits = ATOMIC_INIT(0);
+EXPORT_SYMBOL(total_exits);
+/*atomic64_t cpu_cycles = ATOMIC64_INIT(0);
+EXPORT_SYMBOL(cpu_cycles);*/
+
 static u32 xstate_required_size(u64 xstate_bv, bool compacted)
 {
 	int feature_bit = 0;
@@ -1231,10 +1236,13 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
 
+
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
-	extern u32 total_exists;
+	//extern u32 total_exists;
 	u32 eax, ebx, ecx, edx;
+	//uint64_t cycles;
+	//int64_t cpu_cycles_copy;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -1242,15 +1250,8 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
 	
-	if(eax == 0x4ffffffff){
-		eax = total_exists;
-	}
-	else if(eax  ==  0x4ffffffd)
-	{
-	       if(ecx >= 0 && ecx < 62)
-		{
-			eax = exits_per_reason[(int)ecx];
-		}
+	if(eax == 0x4FFFFFFF){
+		eax = arch_atomic_read(&total_exits);
 	}
 
 	else{
