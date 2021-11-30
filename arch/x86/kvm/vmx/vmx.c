@@ -5916,8 +5916,10 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
  */
-extern atomic_t total_exits;
-//extern atomic64_t cpu_cycles;
+extern atomic_t nExits;
+uint64_t exitF[69] = {0};
+ uint64_t exit_cpu_time[69]={0};
+ uint64_t total_Etime;
 
 static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
@@ -5925,8 +5927,13 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	union vmx_exit_reason exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
 	u16 exit_handler_index;
-	//total_exists++;
-	arch_atomic_inc(&total_exits);
+	
+	int return_exit_handler=0; 
+	uint64_t cycles_prior_exit;
+	uint64_t cycles_post_exit;
+
+	arch_atomic_inc(&nExits);
+
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
 	 * updated. Another good is, in kvm_vm_ioctl_get_dirty_log, before
@@ -6064,10 +6071,16 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 
 	exit_handler_index = array_index_nospec((u16)exit_reason.basic,
 						kvm_vmx_max_exit_handlers);
+	exitF[exit_handler_index]++;
 	if (!kvm_vmx_exit_handlers[exit_handler_index])
 		goto unexpected_vmexit;
 
-	return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+	cycles_prior_exit = rdtsc();
+        return_exit_handler= kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+        cycles_post_exit = rdtsc();
+        exit_cpu_time[exit_handler_index] =  cycles_post_exit - cycles_prior_exit;
+        return return_exit_handler;
+	
 
 unexpected_vmexit:
 	vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n",
@@ -6084,7 +6097,17 @@ unexpected_vmexit:
 
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
-	int ret = __vmx_handle_exit(vcpu, exit_fastpath);
+	uint64_t cycles_prior_exit;
+	uint64_t cycles_post_exit;
+	uint64_t cycleCount;
+	int ret;
+	
+	cycles_prior_exit = rdtsc();
+	ret = __vmx_handle_exit(vcpu, exit_fastpath);
+	cycles_post_exit = rdtsc();
+	cycleCount = cycles_post_exit - cycles_prior_exit;
+	total_Etime = total_Etime + cycleCount;
+	ret = __vmx_handle_exit(vcpu, exit_fastpath);
 
 	/*
 	 * Exit to user space when bus lock detected to inform that there is
