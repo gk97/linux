@@ -36,7 +36,7 @@ Run the following commands
     make clean
     make prepare
     make -j 8 modules
-    sudo make INSTALL_MOD_STRIP=1 modules_install & make install
+    sudo make INSTALL_MOD_STRIP=1 modules_install && make install
     lsmod | grep kvm
     rmmod kvm_intel
     rmmod kvm
