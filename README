@@ -37,11 +37,11 @@ Run the following commands
     make prepare
     make -j 8 modules
     sudo make INSTALL_MOD_STRIP=1 modules_install & make install
-	lsmod | grep kvm
-	rmmod kvm_intel
-	rmmod kvm
-	modprobe kvm
-	modprobe kvm_intel
+    lsmod | grep kvm
+    rmmod kvm_intel
+    rmmod kvm
+    modprobe kvm
+    modprobe kvm_intel
 
 
 Modify cpuid.c file and vmx.c file to report back additional information when special CPUID leaf nodes are requested.
