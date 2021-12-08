@@ -8,32 +8,61 @@ Student ID: 015238509
 CPU leaf nodes implemented in this assignment are :
 	For CPUID leaf node %eax=0x4FFFFFFF:
 		Return the total number of exits (all types) in %eax
-		
+	For CPUID leaf node %eax=0x4FFFFFFE:
+		Return the high 32 bits of the total time spent processing all exits in %ebx
+		Return the low 32 bits of the total time spent processing all exits in %ecx
+		%ebx and %ecx return values are measured in processor cycles, across all VCPUs
 	For CPUID leaf node %eax=0x4FFFFFFD:
+		 Return the number of exits for the exit number provided (on input) in %ecx
+		This value should be returned in %eax 
+	For CPUID leaf node %eax=0x4FFFFFFC:
+		Return the time spent processing the exit number provided (on input) in %ecx
+		Return the high 32 bits of the total time spent for that exit in %ebx
+		Return the low 32 bits of the total time spent for that exit in %ecx
+		
+Steps followed for the assignment
+
+    Download and install VMWare WorkStation
+	Download Ubuntu 20.04.3 iso
+	Create Ubuntu VM in the VMWare using the iso
+	Provide atleast 8GB of RAM, 200GB of Harddisk, 6 CPUs
+	
+The the Linux kernel source code is forked from git (https://github.com/torvalds/linux). Clone the forked repo from git.
+Download the provided MakeFile
+
+Run the following commands
+	sudo apt-get install manpages-dev
+    make oldconfig
+    make clean
+    make prepare
+    make -j 8 modules
+    sudo make INSTALL_MOD_STRIP=1 modules_install && make install
+    lsmod | grep kvm
+    rmmod kvm_intel
+    rmmod kvm
+    modprobe kvm
+    modprobe kvm_intel
+
+
+Modify cpuid.c file and vmx.c file to report back additional information when special CPUID leaf nodes are requested.
+	2)
+		Return the high 32 bits of the total time spent processing all exits in %ebx
+		Return the low 32 bits of the total time spent processing all exits in %ecx
+	3) 
 		Return the number of exits for the exit number provided (on input) in %ecx
+	4)
+		Return the time spent processing the exit number provided (on input) in %ecx
 
-2) The assignment is about  modifying the CPUID emulation code in KVM to report back additional information  when special CPUID leaf nodes are requested
-Steps followed to achieve the given goal:
-
-System requirements: Linux machine, either VM based or on real hardware running on Intel CPU.
-
-Initially the system is checked if it supoprts hardware assisted virtualization by running the command "cat /proc/cpuinfo". If "vmx_flags" attribute is shown in the result then it means that the system is capale of hardware assisted virtualization.
-
-Follow all the steps from assignment 1.
-Make appropriate changes to vmx.c in /linux/arch/x86/kvm/vmx and cupid.c in /linux/arch/x86/kvm in order to have track of number of exits.
-
-Run the "make -j (number of processors) modules" command to build the kernel.
-
-Enter into root mode: sudo bash
-
-then run the command to package: make INSTALL_MOD_STRIP=1 modules_install && make install
-
-Setup another Virtual Machine in the current virtual machine. Compile and Run the test program in the inner virtual machine and verify the output.
-
-
-3) Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there 
+Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there 
 more exits performed during certain VM operations? Approximately how many exits does a full VM 
 boot entail?
-	-> Based on the analysis of output of the test program, it is found that the number of exists do increase in a stable manner
-	-> Approximately the number of exits the VM boot entails is 180520000
+
+	Total number of exits were not stable. MSR access resulted in more exits. A full VM boot resulted in 1252565 exits.
+
+Of the exit types defined in the SDM, which are the most frequent? Least?
 	
+	Most frequent exits were: Interrupt Window (exit number 7) and MSR_WRITE (exit number 32)
+	Least frequent exits were: MOV DR (exit number 29)
+
+
+
