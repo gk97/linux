@@ -83,22 +83,22 @@ Removed the ‘kvm-intel’ module from the running kernel. Reloaded the kvm-int
 captured the output for total exit count. Gave answers for what changed between the two runs ie. with and without ept.
 
 
-2) Nested Paging i.e. Without ept = 0
+### 2) Nested Paging i.e. Without ept = 0
 
 ![](https://github.com/gk97/linux/blob/master/cmpe283/SS1.PNG)
 ![](https://github.com/gk97/linux/blob/master/cmpe283/SS2.PNG)
 
-Shadow Paging i.e. With ept = 0
+### Shadow Paging i.e. With ept = 0
 
 ![](https://github.com/gk97/linux/blob/master/cmpe283/SS3.PNG)
 
-3) The Number of exits increased with ept=0 i.e. Shadow paging than with Nested paging. This increase in number of exits is an expected behavior because
+### 3) The Number of exits increased with ept=0 i.e. Shadow paging than with Nested paging. This increase in number of exits is an expected behavior because
 in case of Nested paging VM exits occurs during EPT violation. In case of Shadow paging, a VM exit might take place whenever VM tries to execute CR0, CR3, CR4 or page faults.
 
-4) With ept:
+### 4) With ept:
 Guest VA is translated to PA and then Host PA using the layered page tables. Since guest VM should own the page table, the operations on CR3 are done natively without need for exits.
 
-Without ept: 
+### Without ept: 
 The hypervisor needs to simulated the CR3 since guest virtual machine does not own page table in case of shadow paging.
 
 
