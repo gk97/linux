@@ -1,6 +1,7 @@
 ## CMPE 283: Virtualization
 ### Assignment 2: Instrumentation via hypercall
 ### Assignment 3: Instrumentation via hypercall (cont’d)
+### Assignment 4: (Scroll down)
 
 ### Team Members: Guru Karthik (only one person Assignment 1, 2 & 3)
 Student ID: 015238509 
@@ -73,11 +74,11 @@ Team members:
 Answers:
 
 1)
-Guru Karthiks's contribution:
+### Guru Karthiks's contribution:
 Ran assignment 3 code and booted a test VM. Upon booting of guest (nested) VM, recorded the total exit count information for each type of exit handled by the KVM.
 Shutdown the guest (nested) VM. Gave answers for What was learnt from the count of exits and the count expectation.
 
-Sai Swarup Rath's contribution:
+### Sai Swarup Rath's contribution:
 Removed the ‘kvm-intel’ module from the running kernel. Reloaded the kvm-intel module with the parameter ept=0. Ran the 'insmod' command. Booted the same test VM again, and
 captured the output for total exit count. Gave answers for what changed between the two runs ie. with and without ept.
 
