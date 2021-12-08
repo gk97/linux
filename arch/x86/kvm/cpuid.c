@@ -1348,7 +1348,7 @@ extern uint64_t exitF[69];
 	     
 	     for(i=0; i<69; i++){
 	     	if((strstr(exits[i], "invalid value") == NULL) && (strstr(exits[i], "_NA") == NULL)){
-	     	printk(KERN_INFO "\t%u \t\t\t\t %-30s \t\t\t\t%llu\n", i, exits[i],exitF[ecx]);
+	     	printk(KERN_INFO "cpuid(0x4FFFFFFE), exit number %-30s exits=%llu\n",exits[i],exitF[ecx]);
 	        }
 	     }
 	     if((int) ecx > -1 && (int)ecx < 69 && (strstr(exits[ecx],"_NA")==NULL) && (strstr(exits[ecx],"invalid value")==NULL)){
